@@ -3,42 +3,26 @@ import fs from "fs";
 
 import express from "express";
 import renderer from "../src/helpers/renderer";
-import Routes from "../src/helpers/Routes";
-import { matchRoutes } from "react-router-config";
-import createStore from "../src/helpers/createStore";
+import React from "react";
+import ReactDOMServer from "react-dom/server";
+
+import App from "../src/App";
 
 const PORT = 3000;
 const app = express();
 
-app.get("*", (req, res) => {
-  const store = createStore(req);
+const router = express.Router();
 
-  const promises = matchRoutes(Routes, req.path)
-    .map(({ route }) => {
-      return route.loadData ? route.loadData(store) : null;
-    })
-    .map(promise => {
-      if (promise) {
-        return new Promise((resolve, reject) => {
-          promise.then(resolve).catch(resolve);
-        });
-      }
-    });
+const serverRenderer = (req, res, next) => {
+  console.log(req.originalUrl);
+  res.send(renderer(req.originalUrl));
+};
+router.use("/", serverRenderer);
 
-  Promise.all(promises).then(() => {
-    const context = {};
-    const content = renderer(req, store);
+router.use(express.static(path.resolve(__dirname, "..", "build")));
 
-    if (context.url) {
-      return res.redirect(301, context.url);
-    }
-    if (context.notFound) {
-      res.status(404);
-    }
-
-    res.send(content);
-  });
-});
+// tell the app to use the above rules
+app.use(router);
 
 // app.use(express.static('./build'))
 app.listen(PORT, () => {
