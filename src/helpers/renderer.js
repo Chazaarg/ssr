@@ -2,11 +2,11 @@ import React from "react";
 import { renderToString } from "react-dom/server";
 import { StaticRouter } from "react-router-dom";
 import Routes from "./Routes";
-
+import { renderRoutes } from "react-router-config";
 export default req => {
   const content = renderToString(
-    <StaticRouter location={req.url} context={{}}>
-      <Routes />
+    <StaticRouter location={req.path} context={{}}>
+      <div>{renderRoutes(Routes)}</div>
     </StaticRouter>
   );
 
