@@ -5,9 +5,9 @@ import Routes from "./Routes";
 import { renderRoutes } from "react-router-config";
 export default req => {
   const content = renderToString(
-    <StaticRouter location={req} context={{}}>
-      <Link to="about">About</Link>
-      <Link to="Home">Home</Link>
+    <StaticRouter location={req.path} context={{}}>
+      <Link to="/about">About</Link>
+      <Link to="/">Home</Link>
       <div>{renderRoutes(Routes)}</div>
     </StaticRouter>
   );
@@ -23,7 +23,7 @@ export default req => {
         </head>
         <body>
             <div id="root">${content}</div>
-            <script type="text/javascript" src="index_bundle.js"></script>
+            <script type="text/javascript" src="bundle.js"></script>
         </body>
     </html>
   `;
